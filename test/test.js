@@ -7,6 +7,7 @@ var expect = require('chai').expect,
     request = require('request'),
     server = require('../index'),
     redis = require('redis'),
+    io = require('socket.io-client'),
     client;
 client = redis.createClient();
 
@@ -35,6 +36,27 @@ describe('server', function () {
                 expect(response.headers['content-type']).to.equal('text/html; charset=utf-8');
                 done();
             });
+        });
+    });
+
+    // Test sending a message
+    describe('Test sending a message', function () {
+        it("should return 'Message received'", function (done) {
+            // Connect to server
+            var socket = io.connect('http://localhost:5000', {
+                'reconnection delay' : 0,
+                'reopen delay' : 0,
+                'force new connection' : true
+            });
+
+            // Handle the message being received
+            socket.on('message', function (data) {
+                expect(data.message).to.include('Message received');
+                done();
+            });
+
+            // Send the message
+            socket.emit('send', { message: 'Message received' });
         });
     });
 });
