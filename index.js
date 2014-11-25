@@ -55,15 +55,13 @@ io.sockets.on('connection', function (socket) {
 
     // Handle incoming messages
     socket.on('send', function (data) {
-        var newmessage;
-
         // Publish it
-        client.publish('ChatChannel', data);
+        client.publish('ChatChannel', data.message);
     });
 
     // Handle receiving messages
     subscribe.on('message', function (channel, data) {
-        console.log(data.message);
+        console.log(data);
         io.sockets.emit('message', data);
     });
 });
