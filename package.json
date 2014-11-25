@@ -1,0 +1,29 @@
+{
+  "name": "babblr",
+  "version": "1.0.0",
+  "description": "A simple chat server written with Node.js and Redis",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt test --verbose"
+  },
+  "keywords": [
+    "chat"
+  ],
+  "author": "Matthew Daly <matthewbdaly@gmail.com> (http://matthewdaly.co.uk/)",
+  "license": "GPLv2",
+  "dependencies": {
+    "express": "^4.10.4",
+    "hiredis": "^0.1.17",
+    "redis": "^0.12.1"
+  },
+  "devDependencies": {
+    "char": "0.0.0",
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-coveralls": "^1.0.0",
+    "grunt-mocha-istanbul": "^2.2.0",
+    "istanbul": "^0.3.2",
+    "mocha": "^2.0.1",
+    "request": "^2.48.0"
+  }
+}
