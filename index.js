@@ -2,7 +2,7 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, client, express, hbs, port, rtg;
+var app, base_url, client, express, hbs, io, port, rtg, subscribe;
 
 // Define values
 express = require('express');
@@ -16,9 +16,12 @@ hbs = require('hbs');
 if (process.env.REDISTOGO_URL) {
     rtg  = require("url").parse(process.env.REDISTOGO_URL);
     client = require("redis").createClient(rtg.port, rtg.hostname);
-    client.auth(rtg.auth.split(":")[1]);
+    client = require("redis").createClient(rtg.port, rtg.hostname);
+    subscribe.auth(rtg.auth.split(":")[1]);
+    subscribe.auth(rtg.auth.split(":")[1]);
 } else {
     client = require('redis').createClient();
+    subscribe = require('redis').createClient();
 }
 
 // Set up templating
@@ -41,5 +44,26 @@ app.get('/', function (req, res) {
 app.use(express.static(__dirname + '/static'));
 
 // Listen
-app.listen(port);
-console.log('Listening on port ' + port);
+io = require('socket.io')({
+}).listen(app.listen(port));
+console.log("Listening on port " + port);
+
+// Handle new messages
+io.sockets.on('connection', function (socket) {
+    // Subscribe to the Redis channel
+    subscribe.subscribe('ChatChannel');
+
+    // Handle incoming messages
+    socket.on('send', function (data) {
+        var newmessage;
+
+        // Publish it
+        client.publish('ChatChannel', data);
+    });
+
+    // Handle receiving messages
+    subscribe.on('message', function (channel, data) {
+        console.log(data.message);
+        io.sockets.emit('message', data);
+    });
+});
