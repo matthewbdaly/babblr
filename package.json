@@ -15,7 +15,9 @@
     "express": "^4.10.4",
     "hbs": "^2.7.0",
     "hiredis": "^0.1.17",
-    "redis": "^0.12.1"
+    "redis": "^0.12.1",
+    "socket.io": "^1.2.1",
+    "socket.io-client": "^1.2.1"
   },
   "devDependencies": {
     "chai": "^1.10.0",
