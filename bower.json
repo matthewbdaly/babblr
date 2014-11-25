@@ -1,0 +1,29 @@
+{
+  "name": "babblr",
+  "main": "index.js",
+  "version": "1.0.0",
+  "authors": [
+    "Matthew Daly <matthewbdaly@gmail.com>"
+  ],
+  "description": "A simple chat server",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "chat"
+  ],
+  "license": "GPLv2",
+  "homepage": "http://www.matthewdaly.co.uk",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "html5-boilerplate": "~4.3.0",
+    "jquery": "~2.1.1"
+  }
+}
