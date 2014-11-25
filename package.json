@@ -17,7 +17,7 @@
     "redis": "^0.12.1"
   },
   "devDependencies": {
-    "char": "0.0.0",
+    "chai": "^1.10.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-coveralls": "^1.0.0",
