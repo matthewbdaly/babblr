@@ -2,13 +2,14 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, client, express, port, rtg;
+var app, base_url, client, express, hbs, port, rtg;
 
 // Define values
 express = require('express');
 app = express();
 port = process.env.PORT || 5000;
 base_url = process.env.BASE_URL || 'http://localhost:5000';
+hbs = require('hbs');
 
 // Set up connection to Redis
 /* istanbul ignore if */
@@ -24,6 +25,9 @@ if (process.env.REDISTOGO_URL) {
 app.set('views', __dirname + '/views');
 app.set('view engine', "hbs");
 app.engine('hbs', require('hbs').__express);
+
+// Register partials
+hbs.registerPartials(__dirname + '/views/partials');
 
 // Set URL
 app.set('base_url', base_url);
