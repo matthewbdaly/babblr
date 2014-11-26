@@ -60,8 +60,13 @@ io.sockets.on('connection', function (socket) {
     });
 
     // Handle receiving messages
-    subscribe.on('message', function (channel, data) {
-        console.log(data);
+    var callback = function (channel, data) {
         io.sockets.emit('message', data);
+    };
+    subscribe.on('message', callback);
+
+    // Handle disconnect
+    socket.on('disconnect', function () {
+        subscribe.removeListener('message', callback);
     });
 });
