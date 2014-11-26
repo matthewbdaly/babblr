@@ -51,7 +51,7 @@ describe('server', function () {
 
             // Handle the message being received
             socket.on('message', function (data) {
-                expect(data.message).to.include('Message received');
+                expect(data).to.include('Message received');
                 done();
             });
 
