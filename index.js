@@ -61,7 +61,7 @@ io.sockets.on('connection', function (socket) {
 
     // Handle receiving messages
     var callback = function (channel, data) {
-        io.sockets.emit('message', data);
+        socket.emit('message', data);
     };
     subscribe.on('message', callback);
 
