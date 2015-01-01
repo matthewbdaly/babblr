@@ -37,7 +37,23 @@ app.set('base_url', base_url);
 
 // Define index route
 app.get('/', function (req, res) {
-    res.render('index');
+    // Get messages
+    client.lrange('chat:messages', 0, -1, function (err, messages) {
+        /* istanbul ignore if */
+        if (err) {
+            console.log(err);
+        } else {
+            // Get messages
+            var message_list = [];
+            messages.forEach(function (message, i) {
+                /* istanbul ignore next */
+                message_list.push(message);
+            });
+
+            // Render page
+            res.render('index', { messages: message_list});
+        }
+    });
 });
 
 // Serve static files
@@ -57,6 +73,9 @@ io.sockets.on('connection', function (socket) {
     socket.on('send', function (data) {
         // Publish it
         client.publish('ChatChannel', data.message);
+
+        // Persist it to a Redis list
+        client.rpush('chat:messages', 'Anonymous Coward : ' + data.message);
     });
 
     // Handle receiving messages
