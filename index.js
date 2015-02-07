@@ -2,7 +2,7 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, client, express, hbs, io, port, rtg, subscribe;
+var app, base_url, client, express, hbs, io, port, RedisStore, rtg, session, subscribe;
 
 // Define values
 express = require('express');
@@ -10,6 +10,8 @@ app = express();
 port = process.env.PORT || 5000;
 base_url = process.env.BASE_URL || 'http://localhost:5000';
 hbs = require('hbs');
+session = require('express-session');
+RedisStore = require('connect-redis')(session);
 
 // Set up connection to Redis
 /* istanbul ignore if */
@@ -23,6 +25,14 @@ if (process.env.REDISTOGO_URL) {
     client = require('redis').createClient();
     subscribe = require('redis').createClient();
 }
+
+// Set up session
+app.use(session({
+    store: new RedisStore({
+        client: client
+    }),
+    secret: 'blibble'
+}));
 
 // Set up templating
 app.set('views', __dirname + '/views');
