@@ -52,8 +52,19 @@ describe('server', function () {
             // Handle the message being received
             socket.on('message', function (data) {
                 expect(data).to.include('Message received');
-                socket.disconnect();
-                done();
+
+                client.lrange('chat:messages', 0, -1, function (err, messages) {
+                    // Check message has been persisted
+                    var message_list = [];
+                    messages.forEach(function (message, i) {
+                        message_list.push(message);
+                    });
+                    expect(message_list[0]).to.include('Message received');
+
+                    // Finish up
+                    socket.disconnect();
+                    done();
+                });
             });
 
             // Send the message
