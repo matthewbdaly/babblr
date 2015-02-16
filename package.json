@@ -12,6 +12,7 @@
   "author": "Matthew Daly <matthewbdaly@gmail.com> (http://matthewdaly.co.uk/)",
   "license": "GPLv2",
   "dependencies": {
+    "body-parser": "^1.12.0",
     "connect-redis": "^2.2.0",
     "express": "^4.10.4",
     "express-session": "^1.10.2",
