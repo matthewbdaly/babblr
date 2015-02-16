@@ -16,11 +16,11 @@ RedisStore = require('connect-redis')(session);
 // Set up connection to Redis
 /* istanbul ignore if */
 if (process.env.REDISTOGO_URL) {
-    rtg  = require("url").parse(process.env.REDISTOGO_URL);
-    client = require("redis").createClient(rtg.port, rtg.hostname);
-    subscribe = require("redis").createClient(rtg.port, rtg.hostname);
-    client.auth(rtg.auth.split(":")[1]);
-    subscribe.auth(rtg.auth.split(":")[1]);
+    rtg  = require('url').parse(process.env.REDISTOGO_URL);
+    client = require('redis').createClient(rtg.port, rtg.hostname);
+    subscribe = require('redis').createClient(rtg.port, rtg.hostname);
+    client.auth(rtg.auth.split(':')[1]);
+    subscribe.auth(rtg.auth.split(':')[1]);
 } else {
     client = require('redis').createClient();
     subscribe = require('redis').createClient();
@@ -64,6 +64,12 @@ app.get('/', function (req, res) {
             res.render('index', { messages: message_list});
         }
     });
+});
+
+// Define login route
+app.get('/login', function (req, res) {
+    // Render view
+    res.render('login');
 });
 
 // Serve static files

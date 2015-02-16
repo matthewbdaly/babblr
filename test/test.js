@@ -39,6 +39,18 @@ describe('server', function () {
         });
     });
 
+    // Test the login route
+    describe('Test the login route', function () {
+        it('should return a page with the text Please enter a handle', function (done) {
+            request.get({ url: 'http://localhost:5000/login' }, function (error, response, body) {
+                expect(body).to.include('Please enter a handle');
+                expect(response.statusCode).to.equal(200);
+                expect(response.headers['content-type']).to.equal('text/html; charset=utf-8');
+                done();
+            });
+        });
+    });
+
     // Test sending a message
     describe('Test sending a message', function () {
         it("should return 'Message received'", function (done) {
