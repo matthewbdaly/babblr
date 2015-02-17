@@ -51,6 +51,20 @@ describe('server', function () {
         });
     });
 
+    // Test submitting to the login route
+    describe('Test submitting to the login route', function () {
+        it('should store the username in the session and redirect the user to the index', function (done) {
+            request.post({ url: 'http://localhost:5000/login',
+                form:{username: 'bobsmith'},
+                followRedirect: false},
+                function (error, response, body) {
+                    expect(response.headers.location).to.equal('/');
+                    expect(response.statusCode).to.equal(302);
+                    done();
+            });
+        });
+    });
+
     // Test sending a message
     describe('Test sending a message', function () {
         it("should return 'Message received'", function (done) {
