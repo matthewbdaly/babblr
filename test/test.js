@@ -65,6 +65,20 @@ describe('server', function () {
         });
     });
 
+    // Test empty login
+    describe('Test empty login', function () {
+        it('should show the login form', function (done) {
+            request.post({ url: 'http://localhost:5000/login',
+                form:{username: ''},
+                followRedirect: false},
+                function (error, response, body) {
+                    expect(response.statusCode).to.equal(200);
+                    expect(body).to.include('Please enter a handle');
+                    done();
+            });
+        });
+    });
+
     // Test sending a message
     describe('Test sending a message', function () {
         it("should return 'Message received'", function (done) {

@@ -2,11 +2,12 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, client, express, hbs, io, port, RedisStore, rtg, session, subscribe;
+var app, base_url, bodyParser, client, express, hbs, io, port, RedisStore, rtg, session, subscribe;
 
 // Define values
 express = require('express');
 app = express();
+bodyParser = require('body-parser');
 port = process.env.PORT || 5000;
 base_url = process.env.BASE_URL || 'http://localhost:5000';
 hbs = require('hbs');
@@ -45,6 +46,12 @@ hbs.registerPartials(__dirname + '/views/partials');
 // Set URL
 app.set('base_url', base_url);
 
+// Handle POST data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+      extended: true
+}));
+
 // Define index route
 app.get('/', function (req, res) {
     // Get messages
@@ -70,6 +77,21 @@ app.get('/', function (req, res) {
 app.get('/login', function (req, res) {
     // Render view
     res.render('login');
+});
+
+// Process login
+app.post('/login', function (req, res) {
+    // Get username
+    var username = req.body.username;
+
+    // If username length is zero, reload the page
+    if (username.length === 0) {
+        res.render('login');
+    } else {
+        // Store username in session and redirect to index
+        req.session.username = username;
+        res.redirect('/');
+    }
 });
 
 // Serve static files
