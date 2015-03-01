@@ -60,6 +60,9 @@ app.get('/', function (req, res) {
         if (err) {
             console.log(err);
         } else {
+            // Get username
+            var username = req.session.username;
+
             // Get messages
             var message_list = [];
             messages.forEach(function (message, i) {
@@ -68,7 +71,7 @@ app.get('/', function (req, res) {
             });
 
             // Render page
-            res.render('index', { messages: message_list});
+            res.render('index', { messages: message_list, username: username });
         }
     });
 });
