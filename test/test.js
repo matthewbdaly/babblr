@@ -85,6 +85,31 @@ describe('server', function () {
         });
     });
 
+    // Test logout
+    describe('Test logout', function () {
+        it('should log the user out', function (done) {
+            request.post({ url: 'http://localhost:5000/login',
+                form:{username: 'bobsmith'},
+                jar: true,
+                followRedirect: false},
+                function (error, response, body) {
+                    expect(response.headers.location).to.equal('/');
+                    expect(response.statusCode).to.equal(302);
+
+                    // Check the username
+                    request.get({ url: 'http://localhost:5000/', jar: true }, function (error, response, body) {
+                        expect(body).to.include('bobsmith');
+
+                        // Log the user out
+                        request.get({ url: 'http://localhost:5000/logout', jar: true }, function (error, response, body) {
+                            expect(body).to.include('Log in');
+                            done();
+                            });
+                    });
+            });
+        });
+    });
+
     // Test sending a message
     describe('Test sending a message', function () {
         it("should return 'Message received'", function (done) {

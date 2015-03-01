@@ -97,6 +97,15 @@ app.post('/login', function (req, res) {
     }
 });
 
+// Process logout
+app.get('/logout', function (req, res) {
+    // Delete username from session
+    req.session.username = null;
+
+    // Redirect user
+    res.redirect('/');
+});
+
 // Serve static files
 app.use(express.static(__dirname + '/static'));
 
