@@ -112,7 +112,7 @@ describe('server', function () {
 
     // Test sending a message
     describe('Test sending a message', function () {
-        it("should return 'Message received'", function (done) {
+        it("should return 'bobsmith: Message received'", function (done) {
             // Connect to server
             var socket = io.connect('http://localhost:5000', {
                 'reconnection delay' : 0,
