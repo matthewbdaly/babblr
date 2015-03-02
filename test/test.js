@@ -122,13 +122,20 @@ describe('server', function () {
 
             // Handle the message being received
             socket.on('message', function (data) {
-                expect(data).to.include('Message received');
+                expect(data).to.include('bobsmith: Message received');
                 socket.disconnect();
                 done();
             });
 
-            // Send the message
-            socket.emit('send', { message: 'Message received' });
+            // Log the user in
+            request.post({ url: 'http://localhost:5000/login',
+                form:{username: 'bobsmith'},
+                jar: true,
+                followRedirect: false},
+                function (error, response, body) {
+                    // Send the message
+                    socket.emit('send', { message: 'Message received' });
+                });
         });
     });
 });
