@@ -130,12 +130,15 @@ io.sockets.on('connection', function (socket) {
         // Define variables
         var username, message;
 
+        // Strip tags from message
+        message = data.message.replace(/<[^>]*>/g, '');
+
         // Get username
         username = socket.request.session.username;
         if (!username) {
             username = 'Anonymous Coward';
         }
-        message = username + ': ' + data.message;
+        message = username + ': ' + message;
 
         // Publish it
         client.publish('ChatChannel', message);
