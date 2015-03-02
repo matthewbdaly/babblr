@@ -112,7 +112,7 @@ describe('server', function () {
 
     // Test sending a message
     describe('Test sending a message', function () {
-        it("should return 'bobsmith: Message received'", function (done) {
+        it("should return 'Message received'", function (done) {
             // Connect to server
             var socket = io.connect('http://localhost:5000', {
                 'reconnection delay' : 0,
@@ -122,20 +122,13 @@ describe('server', function () {
 
             // Handle the message being received
             socket.on('message', function (data) {
-                expect(data).to.include('bobsmith: Message received');
+                expect(data).to.include('Message received');
                 socket.disconnect();
                 done();
             });
 
-            // Log the user in
-            request.post({ url: 'http://localhost:5000/login',
-                form:{username: 'bobsmith'},
-                jar: true,
-                followRedirect: false},
-                function (error, response, body) {
-                    // Send the message
-                    socket.emit('send', { message: 'Message received' });
-                });
+            // Send the message
+            socket.emit('send', { message: 'Message received' });
         });
     });
 });
