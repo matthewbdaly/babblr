@@ -2,7 +2,7 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, bodyParser, client, express, hbs, io, port, RedisStore, rtg, session, subscribe;
+var app, base_url, bodyParser, client, express, hbs, io, port, RedisStore, rtg, session, sessionMiddleware, subscribe;
 
 // Define values
 express = require('express');
@@ -28,12 +28,13 @@ if (process.env.REDISTOGO_URL) {
 }
 
 // Set up session
-app.use(session({
+sessionMiddleware = session({
     store: new RedisStore({
         client: client
     }),
     secret: 'blibble'
-}));
+});
+app.use(sessionMiddleware);
 
 // Set up templating
 app.set('views', __dirname + '/views');
@@ -114,6 +115,11 @@ io = require('socket.io')({
 }).listen(app.listen(port));
 console.log("Listening on port " + port);
 
+// Integrate sessions
+io.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});
+
 // Handle new messages
 io.sockets.on('connection', function (socket) {
     // Subscribe to the Redis channel
@@ -121,11 +127,21 @@ io.sockets.on('connection', function (socket) {
 
     // Handle incoming messages
     socket.on('send', function (data) {
+        // Define variables
+        var username, message;
+
+        // Get username
+        username = socket.request.session.username;
+        if (!username) {
+            username = 'Anonymous Coward';
+        }
+        message = username + ': ' + data.message;
+
         // Publish it
-        client.publish('ChatChannel', data.message);
+        client.publish('ChatChannel', message);
 
         // Persist it to a Redis list
-        client.rpush('chat:messages', 'Anonymous Coward : ' + data.message);
+        client.rpush('chat:messages', message);
     });
 
     // Handle receiving messages
