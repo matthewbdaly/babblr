@@ -23,6 +23,6 @@ $(document).ready(function () {
     // Handle incoming messages
     socket.on('message', function (data) {
         // Insert the message
-        output.append('<p>Anonymous Coward : ' + data + '</p>');
+        output.append('<p>' + data + '</p>');
     });
 });

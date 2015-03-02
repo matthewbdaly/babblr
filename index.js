@@ -2,27 +2,39 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, client, express, hbs, io, port, rtg, subscribe;
+var app, base_url, bodyParser, client, express, hbs, io, port, RedisStore, rtg, session, sessionMiddleware, subscribe;
 
 // Define values
 express = require('express');
 app = express();
+bodyParser = require('body-parser');
 port = process.env.PORT || 5000;
 base_url = process.env.BASE_URL || 'http://localhost:5000';
 hbs = require('hbs');
+session = require('express-session');
+RedisStore = require('connect-redis')(session);
 
 // Set up connection to Redis
 /* istanbul ignore if */
 if (process.env.REDISTOGO_URL) {
-    rtg  = require("url").parse(process.env.REDISTOGO_URL);
-    client = require("redis").createClient(rtg.port, rtg.hostname);
-    subscribe = require("redis").createClient(rtg.port, rtg.hostname);
-    client.auth(rtg.auth.split(":")[1]);
-    subscribe.auth(rtg.auth.split(":")[1]);
+    rtg  = require('url').parse(process.env.REDISTOGO_URL);
+    client = require('redis').createClient(rtg.port, rtg.hostname);
+    subscribe = require('redis').createClient(rtg.port, rtg.hostname);
+    client.auth(rtg.auth.split(':')[1]);
+    subscribe.auth(rtg.auth.split(':')[1]);
 } else {
     client = require('redis').createClient();
     subscribe = require('redis').createClient();
 }
+
+// Set up session
+sessionMiddleware = session({
+    store: new RedisStore({
+        client: client
+    }),
+    secret: 'blibble'
+});
+app.use(sessionMiddleware);
 
 // Set up templating
 app.set('views', __dirname + '/views');
@@ -35,6 +47,12 @@ hbs.registerPartials(__dirname + '/views/partials');
 // Set URL
 app.set('base_url', base_url);
 
+// Handle POST data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+      extended: true
+}));
+
 // Define index route
 app.get('/', function (req, res) {
     // Get messages
@@ -43,6 +61,9 @@ app.get('/', function (req, res) {
         if (err) {
             console.log(err);
         } else {
+            // Get username
+            var username = req.session.username;
+
             // Get messages
             var message_list = [];
             messages.forEach(function (message, i) {
@@ -51,9 +72,39 @@ app.get('/', function (req, res) {
             });
 
             // Render page
-            res.render('index', { messages: message_list});
+            res.render('index', { messages: message_list, username: username });
         }
     });
+});
+
+// Define login route
+app.get('/login', function (req, res) {
+    // Render view
+    res.render('login');
+});
+
+// Process login
+app.post('/login', function (req, res) {
+    // Get username
+    var username = req.body.username;
+
+    // If username length is zero, reload the page
+    if (username.length === 0) {
+        res.render('login');
+    } else {
+        // Store username in session and redirect to index
+        req.session.username = username;
+        res.redirect('/');
+    }
+});
+
+// Process logout
+app.get('/logout', function (req, res) {
+    // Delete username from session
+    req.session.username = null;
+
+    // Redirect user
+    res.redirect('/');
 });
 
 // Serve static files
@@ -64,6 +115,11 @@ io = require('socket.io')({
 }).listen(app.listen(port));
 console.log("Listening on port " + port);
 
+// Integrate sessions
+io.use(function(socket, next) {
+    sessionMiddleware(socket.request, socket.request.res, next);
+});
+
 // Handle new messages
 io.sockets.on('connection', function (socket) {
     // Subscribe to the Redis channel
@@ -71,11 +127,21 @@ io.sockets.on('connection', function (socket) {
 
     // Handle incoming messages
     socket.on('send', function (data) {
+        // Define variables
+        var username, message;
+
+        // Get username
+        username = socket.request.session.username;
+        if (!username) {
+            username = 'Anonymous Coward';
+        }
+        message = username + ': ' + data.message;
+
         // Publish it
-        client.publish('ChatChannel', data.message);
+        client.publish('ChatChannel', message);
 
         // Persist it to a Redis list
-        client.rpush('chat:messages', 'Anonymous Coward : ' + data.message);
+        client.rpush('chat:messages', message);
     });
 
     // Handle receiving messages

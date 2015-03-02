@@ -21,9 +21,23 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
         <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">Babblr</a>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-nav">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Babblr</a>
+                    <div class="collapse navbar-collapse navbar-right" id="header-nav">
+                        <ul class="nav navbar-nav">
+                            {{#if username}}
+                            <li><a href="/logout">Logged in as {{ username }}</a></li>
+                            {{else}}
+                            <li><a href="/login">Log in</a></li>
+                            {{/if}}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
