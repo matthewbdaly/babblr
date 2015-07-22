@@ -2,7 +2,7 @@
 'use strict';
 
 // Declare variables used
-var app, base_url, bodyParser, client, express, hbs, io, port, RedisStore, rtg, session, sessionMiddleware, subscribe;
+var app, base_url, bodyParser, client, express, hbs, io, morgan, port, RedisStore, rtg, session, sessionMiddleware, subscribe;
 
 // Define values
 express = require('express');
@@ -13,6 +13,7 @@ base_url = process.env.BASE_URL || 'http://localhost:5000';
 hbs = require('hbs');
 session = require('express-session');
 RedisStore = require('connect-redis')(session);
+morgan = require('morgan');
 
 // Set up connection to Redis
 /* istanbul ignore if */
@@ -40,6 +41,9 @@ app.use(sessionMiddleware);
 app.set('views', __dirname + '/views');
 app.set('view engine', "hbs");
 app.engine('hbs', require('hbs').__express);
+
+// Set up logging
+app.use(morgan('combined'));
 
 // Register partials
 hbs.registerPartials(__dirname + '/views/partials');
