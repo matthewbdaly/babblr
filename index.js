@@ -33,7 +33,9 @@ sessionMiddleware = session({
     store: new RedisStore({
         client: client
     }),
-    secret: 'blibble'
+    secret: 'blibble',
+    resave: true,
+    saveUninitialized: true
 });
 app.use(sessionMiddleware);
 
